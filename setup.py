@@ -8,5 +8,5 @@ setup(
     author_email="zicods7@gmail.com",
     url="https://github.com/zicodasilva/py_utils",
     packages=find_packages(),
-    install_requires=["cloudpickle"]
+    install_requires=["cloudpickle", "dill"]
 )

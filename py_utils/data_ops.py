@@ -7,7 +7,9 @@ Mainly saving/loading data to/from disk and general operations on in-memory data
 import pickle
 import cloudpickle
 import dill
-from typing import Any, Dict
+from typing import Any, Dict, List, Union
+import pandas as pd
+import numpy as np
 
 def save_pickle(filename: str, data: Dict) -> None:
     """Saves dictionary as a pickle file to a user supplied destination directory.
@@ -31,7 +33,7 @@ def load_pickle(filename: str) -> Dict:
     with open(filename, "rb") as handle:
         return pickle.load(handle)
 
-def save_dill(filename: str, data: Dict) -> None:
+def save_dill(filename: str, data: Any) -> None:
     """Saves dictionary as a pickle file to a user supplied destination directory using dill.
 
     Args:
@@ -92,3 +94,37 @@ def get_key(dict_data: Dict, value: Any) -> str:
              return key
 
     raise ValueError(f"Could not find key corresponding to value: {value}")
+
+def series_to_supervised(data: Union[pd.DataFrame, np.ndarray, List], n_in = 1, n_out = 1, dropnan = True) -> pd.DataFrame:
+	"""
+	Frame a time series as a supervised learning dataset.
+	Args:
+		data: Sequence of observations as a list or NumPy array.
+		n_in: Number of lag observations as input (X).
+		n_out: Number of observations as output (y).
+		dropnan: Boolean whether or not to drop rows with NaN values.
+	Returns:
+        Pandas DataFrame of series framed for supervised learning.
+	"""
+	n_vars = 1 if type(data) is list else data.shape[1]
+	df = pd.DataFrame(data)
+	cols, names = list(), list()
+	# input sequence (t-n, ... t-1)
+	for i in range(n_in, 0, -1):
+		cols.append(df.shift(i))
+		names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
+	# forecast sequence (t, t+1, ... t+n)
+	for i in range(0, n_out):
+		cols.append(df.shift(-i))
+		if i == 0:
+			names += [('var%d(t)' % (j+1)) for j in range(n_vars)]
+		else:
+			names += [('var%d(t+%d)' % (j+1, i)) for j in range(n_vars)]
+	# put it all together
+	agg = pd.concat(cols, axis=1)
+	agg.columns = names
+	# drop rows with NaN values
+	if dropnan:
+		agg.dropna(inplace=True)
+
+	return agg

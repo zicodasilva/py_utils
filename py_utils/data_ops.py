@@ -103,7 +103,11 @@ def get_key(dict_data: Dict, value: Any) -> str:
     raise ValueError(f"Could not find key corresponding to value: {value}")
 
 
-def series_to_supervised(data: Union[pd.DataFrame, np.ndarray, List], n_in=1, n_out=1, dropnan=True) -> pd.DataFrame:
+def series_to_supervised(data: Union[pd.DataFrame, np.ndarray, List],
+                         n_in=1,
+                         n_out=1,
+                         n_step=1,
+                         dropnan=True) -> pd.DataFrame:
     """
 	Frame a time series as a supervised learning dataset.
 	Args:
@@ -118,7 +122,7 @@ def series_to_supervised(data: Union[pd.DataFrame, np.ndarray, List], n_in=1, n_
     df = pd.DataFrame(data)
     cols, names = list(), list()
     # input sequence (t-n, ... t-1)
-    for i in range(n_in, 0, -1):
+    for i in range(n_step * n_in, 0, -n_step):
         cols.append(df.shift(i))
         names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
     # forecast sequence (t, t+1, ... t+n)

@@ -7,7 +7,8 @@ from typing import Union
 import numpy as np
 import sympy as sp
 
-def rot_x(x: Union[np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
+
+def rot_x(x: Union[float, np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
     """Generates a rotation matrix from an angle rotated around the x-axis.
 
     Args:
@@ -24,12 +25,10 @@ def rot_x(x: Union[np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
         c = np.cos(x)
         s = np.sin(x)
         func = np.array
-    return func([[1, 0, 0],
-                 [0, c, s],
-                 [0, -s, c]])
+    return func([[1, 0, 0], [0, c, s], [0, -s, c]])
 
 
-def rot_y(y: Union[np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
+def rot_y(y: Union[float, np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
     """Generates a rotation matrix from an angle rotated around the y-axis.
 
     Args:
@@ -46,12 +45,10 @@ def rot_y(y: Union[np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
         c = np.cos(y)
         s = np.sin(y)
         func = np.array
-    return func([[c, 0, -s],
-                 [0, 1, 0],
-                 [s, 0, c]])
+    return func([[c, 0, -s], [0, 1, 0], [s, 0, c]])
 
 
-def rot_z(z: Union[np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
+def rot_z(z: Union[float, np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
     """Generates a rotation matrix from an angle rotated around the z-axis.
 
     Args:
@@ -68,6 +65,4 @@ def rot_z(z: Union[np.ndarray, sp.Expr]) -> Union[np.ndarray, sp.Matrix]:
         c = np.cos(z)
         s = np.sin(z)
         func = np.array
-    return func([[c, s, 0],
-                 [-s, c, 0],
-                 [0, 0, 1]])
+    return func([[c, s, 0], [-s, c, 0], [0, 0, 1]])
